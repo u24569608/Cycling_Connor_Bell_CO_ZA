@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { Map, NavigationControl, addProtocol, removeProtocol, setWorkerUrl, type LayerSpecification, type StyleSpecification } from "maplibre-gl";
 import { createRoadDetailProtocol } from "@/lib/road-detail";
+import { MapScaleControl } from "@/lib/map-scale-control";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./heatmap.css";
 
@@ -284,6 +285,7 @@ function HeatmapPage() {
     });
 
     map.addControl(new NavigationControl(), "top-right");
+    map.addControl(new MapScaleControl(), "bottom-left");
     map.scrollZoom.setWheelZoomRate(zoomSettings.wheelRate);
     map.scrollZoom.setZoomRate(zoomSettings.trackpadRate);
 

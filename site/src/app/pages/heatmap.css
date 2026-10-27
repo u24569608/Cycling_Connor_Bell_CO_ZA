@@ -24,6 +24,49 @@ body:has(main[data-page="heatmap"]) {
   margin: 0;
 }
 
+.heatmap-map .maplibregl-ctrl-bottom-left {
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+  left: 2rem;
+}
+
+.heatmap-map .heatmap-scale {
+  margin: 0;
+  pointer-events: none;
+  color: #dedede;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 3px #000, 0 0 3px #000;
+}
+
+.heatmap-scale-labels {
+  position: relative;
+  height: 18px;
+  white-space: nowrap;
+}
+
+.heatmap-scale-labels span {
+  position: absolute;
+  top: 0;
+}
+
+.heatmap-scale-labels span:nth-child(2) {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.heatmap-scale-labels span:last-child {
+  right: 0;
+}
+
+.heatmap-scale-bar {
+  height: 8px;
+  border: 1px solid #dedede;
+  background: linear-gradient(to right, #dedede 0% 25%, #333 25% 50%, #dedede 50% 75%, #333 75% 100%);
+  box-shadow: 0 1px 3px #000;
+}
+
 @media (width < 48rem) {
   .heatmap-map .maplibregl-ctrl-top-right {
     top: auto;
