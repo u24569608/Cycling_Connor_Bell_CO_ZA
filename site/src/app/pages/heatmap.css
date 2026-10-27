@@ -1,0 +1,40 @@
+.heatmap-map.maplibregl-map {
+  background-color: #0c0c0c;
+  font-family: var(--font-work-sans), sans-serif;
+}
+
+.heatmap-map .maplibregl-ctrl-group {
+  background-color: #1c1c1c;
+  box-shadow: 0 0 0 1px #383838;
+}
+
+.heatmap-map .maplibregl-ctrl-group button + button {
+  border-top-color: #383838;
+}
+
+.heatmap-map .maplibregl-ctrl-group button:hover {
+  background-color: #2a2a2a;
+}
+
+.heatmap-map .maplibregl-ctrl-group button:focus-visible {
+  outline: 2px solid #b8b8b8;
+  outline-offset: -2px;
+}
+
+.heatmap-map .maplibregl-ctrl-icon {
+  filter: invert(1) grayscale(1);
+}
+
+.heatmap-map .maplibregl-ctrl-attrib,
+.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact {
+  background-color: rgb(12 12 12 / 90%);
+  color: #a3a3a3;
+}
+
+.heatmap-map .maplibregl-ctrl-attrib a {
+  color: inherit;
+}
+
+.heatmap-map .maplibregl-ctrl-attrib-button {
+  filter: invert(1) grayscale(1);
+}
