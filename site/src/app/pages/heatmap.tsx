@@ -17,6 +17,27 @@ const roadColors: Record<string, string> = {
   highway_motorway_subtle: highwayColor,
 };
 
+type ZoomStops = [number, number][];
+type ZoomExpression = ["interpolate", ["linear"], ["zoom"], ...number[]];
+
+const roadWidthStops = {
+  path: [[8, 0.1], [11, 0.2], [13, 0.5], [16, 1.5], [20, 6]],
+  minor: [[8, 0.15], [10, 0.25], [12, 0.5], [14, 1.2], [16, 3], [20, 14]],
+  major: [[6, 0.2], [10, 0.5], [12, 1], [14, 2], [16, 5], [20, 18]],
+  motorway: [[4, 0.25], [8, 0.5], [10, 0.8], [12, 1.4], [14, 3], [16, 7], [20, 24]],
+} satisfies Record<string, ZoomStops>;
+
+const roadWidthLayers: Record<string, keyof typeof roadWidthStops> = {
+  highway_path: "path",
+  highway_minor: "minor",
+  highway_major_casing: "major",
+  highway_major_inner: "major",
+  highway_major_subtle: "major",
+  highway_motorway_casing: "motorway",
+  highway_motorway_inner: "motorway",
+  highway_motorway_subtle: "motorway",
+};
+
 const labelSizes: Record<string, number> = {
   water_name: 12,
   place_other: 12,
@@ -57,6 +78,33 @@ const labelStyle = {
   haloWidth: 1,
 };
 
+const labelZoom = {
+  overviewZoom: 8,
+  overviewScale: 0.55,
+  regionalZoom: 11,
+  regionalScale: 0.7,
+  detailZoom: 14,
+  detailScale: 1,
+  placePadding: 14,
+  roadPadding: 3,
+};
+
+const labelMinZoom: Record<string, number> = {
+  water_name: 12,
+  place_other: 13,
+  place_suburb: 12,
+  place_village: 11,
+  place_town: 9,
+  place_city: 7,
+  place_city_large: 5,
+  highway_name_other: 13,
+  highway_name_motorway: 11,
+};
+
+function zoomCurve(stops: ZoomStops): ZoomExpression {
+  return ["interpolate", ["linear"], ["zoom"], ...stops.flat()];
+}
+
 function HeatmapPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -83,13 +131,15 @@ function HeatmapPage() {
             return true;
           }).map((layer): LayerSpecification => {
             const roadColor = roadColors[layer.id];
+            const roadWidthLayer = roadWidthLayers[layer.id];
 
-            if (layer.type === "line" && roadColor !== undefined) {
+            if (layer.type === "line" && roadColor !== undefined && roadWidthLayer !== undefined) {
               return {
                 ...layer,
                 paint: {
                   ...layer.paint,
                   "line-color": roadColor,
+                  "line-width": zoomCurve(roadWidthStops[roadWidthLayer]),
                 },
               };
             }
@@ -98,13 +148,24 @@ function HeatmapPage() {
               return layer;
             }
 
+            const labelSize = labelSizes[layer.id] ?? labelStyle.defaultSize;
+            const isPlaceLabel = layer.id.startsWith("place_");
+
             return {
               ...layer,
+              minzoom: Math.max(layer.minzoom ?? 0, labelMinZoom[layer.id] ?? 0),
               layout: {
                 ...layer.layout,
                 "text-font": [labelStyle.font],
-                "text-size": labelSizes[layer.id] ?? layer.layout?.["text-size"] ?? labelStyle.defaultSize,
+                "text-size": zoomCurve([
+                  [labelZoom.overviewZoom, labelSize * labelZoom.overviewScale],
+                  [labelZoom.regionalZoom, labelSize * labelZoom.regionalScale],
+                  [labelZoom.detailZoom, labelSize * labelZoom.detailScale],
+                ]),
                 "text-transform": "none",
+                "text-padding": isPlaceLabel ? labelZoom.placePadding : labelZoom.roadPadding,
+                "text-allow-overlap": false,
+                "text-ignore-placement": false,
               },
               paint: {
                 ...layer.paint,
