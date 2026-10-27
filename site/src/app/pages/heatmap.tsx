@@ -4,15 +4,17 @@ import { Map, NavigationControl, setWorkerUrl, type LayerSpecification } from "m
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./heatmap.css";
 
+const highwayColor = "#252525";
+
 const roadColors: Record<string, string> = {
   highway_path: "#202020",
   highway_minor: "#262626",
   highway_major_casing: "#242424",
   highway_major_inner: "#242424",
   highway_major_subtle: "#242424",
-  highway_motorway_casing: "#2a2a2a",
-  highway_motorway_inner: "#2a2a2a",
-  highway_motorway_subtle: "#2a2a2a",
+  highway_motorway_casing: highwayColor,
+  highway_motorway_inner: highwayColor,
+  highway_motorway_subtle: highwayColor,
 };
 
 const labelSizes: Record<string, number> = {
@@ -27,7 +29,7 @@ const labelSizes: Record<string, number> = {
   place_country_other: 12,
   place_country_minor: 14,
   place_country_major: 16,
-  highway_name_other: 11,
+  highway_name_other: 12,
   highway_name_motorway: 11,
 };
 
@@ -35,7 +37,7 @@ const labelColors: Record<string, string> = {
   water_name: "#3b3b3b",
   place_other: "#3b3b3b",
   place_suburb: "#474747",
-  place_village: "#525252",
+  place_village: "#4f4f4f",
   place_town: "#5b5b5b",
   place_city: "#636363",
   place_city_large: "#717171",
