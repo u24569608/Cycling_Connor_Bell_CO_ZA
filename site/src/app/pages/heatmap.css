@@ -4,8 +4,14 @@
 }
 
 .heatmap-map .maplibregl-ctrl-group {
+  border-radius: 0;
   background-color: #1c1c1c;
   box-shadow: 0 0 0 1px #383838;
+}
+
+.heatmap-map .maplibregl-ctrl-group button:first-child,
+.heatmap-map .maplibregl-ctrl-group button:last-child {
+  border-radius: 0;
 }
 
 .heatmap-map .maplibregl-ctrl-group button + button {
@@ -25,6 +31,24 @@
   filter: invert(1) grayscale(1);
 }
 
+.heatmap-map .maplibregl-ctrl button:is(.maplibregl-ctrl-zoom-in, .maplibregl-ctrl-zoom-out) .maplibregl-ctrl-icon {
+  display: grid;
+  place-items: center;
+  background-image: none;
+  color: #ccc;
+  filter: none;
+  font: 400 24px / 1 "Material Symbols Sharp";
+  font-feature-settings: "liga";
+}
+
+.heatmap-map .maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon::before {
+  content: "add";
+}
+
+.heatmap-map .maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon::before {
+  content: "remove";
+}
+
 .heatmap-map .maplibregl-ctrl-attrib,
 .heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact {
   background-color: rgb(12 12 12 / 90%);
@@ -35,6 +59,54 @@
   color: inherit;
 }
 
-.heatmap-map .maplibregl-ctrl-attrib-button {
-  filter: invert(1) grayscale(1);
+.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact {
+  box-sizing: border-box;
+  min-width: 29px;
+  min-height: 29px;
+  padding: 0;
+  border-radius: 0;
+  background-color: #1c1c1c;
+  box-shadow: 0 0 0 1px #383838;
+}
+
+.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact.maplibregl-compact-show {
+  padding: 4px 37px 4px 8px;
+}
+
+.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact::after {
+  display: none;
+}
+
+.heatmap-map .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button {
+  width: 29px;
+  height: 29px;
+  border-radius: 0;
+  background-color: #1c1c1c;
+  background-image: none;
+  color: #ccc;
+  filter: none;
+  font: 400 18px / 1 "Material Symbols Sharp";
+  font-feature-settings: "liga";
+}
+
+.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button {
+  display: grid;
+  place-items: center;
+}
+
+.heatmap-map .maplibregl-ctrl-attrib-button::before {
+  content: "info_i";
+}
+
+.heatmap-map .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button:hover {
+  background-color: #2a2a2a;
+}
+
+.heatmap-map .maplibregl-ctrl-attrib-button:focus {
+  box-shadow: none;
+}
+
+.heatmap-map .maplibregl-ctrl-attrib-button:focus-visible {
+  outline: 2px solid #b8b8b8;
+  outline-offset: -2px;
 }

@@ -1,10 +1,18 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { Map, NavigationControl, setWorkerUrl, type LayerSpecification } from "maplibre-gl";
+import { Map, NavigationControl, AttributionControl, addProtocol, removeProtocol, setWorkerUrl, type LayerSpecification, type StyleSpecification } from "maplibre-gl";
+import { createRoadDetailProtocol } from "@/lib/road-detail";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./heatmap.css";
 
 const highwayColor = "#252525";
+
+const zoomSettings = {
+  buttonStep: 0.5,
+  buttonDuration: 800,
+  wheelRate: 1 / 900,
+  trackpadRate: 1 / 200,
+};
 
 const roadColors: Record<string, string> = {
   highway_path: "#202020",
@@ -17,12 +25,25 @@ const roadColors: Record<string, string> = {
   highway_motorway_subtle: highwayColor,
 };
 
+const fineRoadDetail = {
+  minZoom: 7,
+  overviewZoom: 10,
+  detailZoom: 14,
+  overviewColor: "#323232",
+  tileZoomBoost: 1,
+  minDetailTileZoom: 12,
+  tileMinZoom: 10,
+  minorTileMaxZoom: 12,
+  pathTileMinZoom: 11,
+  pathTileMaxZoom: 13,
+};
+
 type ZoomStops = [number, number][];
 type ZoomExpression = ["interpolate", ["linear"], ["zoom"], ...number[]];
 
 const roadWidthStops = {
-  path: [[8, 0.1], [11, 0.2], [13, 0.5], [16, 1.5], [20, 6]],
-  minor: [[8, 0.15], [10, 0.25], [12, 0.5], [14, 1.2], [16, 3], [20, 14]],
+  path: [[7, 0.15], [10, 0.25], [12, 0.4], [14, 0.7], [16, 1.5], [20, 6]],
+  minor: [[7, 0.2], [10, 0.35], [12, 0.6], [14, 1.2], [16, 3], [20, 14]],
   major: [[6, 0.2], [10, 0.5], [12, 1], [14, 2], [16, 5], [20, 18]],
   motorway: [[4, 0.25], [8, 0.5], [10, 0.8], [12, 1.4], [14, 3], [16, 7], [20, 24]],
 } satisfies Record<string, ZoomStops>;
@@ -46,7 +67,7 @@ const labelSizes: Record<string, number> = {
   place_town: 16,
   place_city: 18,
   place_city_large: 20,
-  place_state: 12,
+  place_state: 22,
   place_country_other: 12,
   place_country_minor: 14,
   place_country_major: 16,
@@ -57,11 +78,11 @@ const labelSizes: Record<string, number> = {
 const labelColors: Record<string, string> = {
   water_name: "#3b3b3b",
   place_other: "#3b3b3b",
-  place_suburb: "#474747",
+  place_suburb: "#3c3c3c",
   place_village: "#4f4f4f",
-  place_town: "#5b5b5b",
-  place_city: "#636363",
-  place_city_large: "#717171",
+  place_town: "#7e7e7e",
+  place_city: "#7e7e7e",
+  place_city_large: "#7e7e7e",
   place_state: "#3b3b3b",
   place_country_other: "#3b3b3b",
   place_country_minor: "#515151",
@@ -105,6 +126,14 @@ function zoomCurve(stops: ZoomStops): ZoomExpression {
   return ["interpolate", ["linear"], ["zoom"], ...stops.flat()];
 }
 
+class MapAttributionControl extends AttributionControl {
+  onAdd(map: Map): HTMLElement {
+    const container = super.onAdd(map);
+    container.classList.remove("maplibregl-compact-show");
+    return container;
+  }
+}
+
 function HeatmapPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -117,12 +146,28 @@ function HeatmapPage() {
       new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).toString(),
     );
 
+    addProtocol("road-detail", createRoadDetailProtocol(
+      "https://tiles.openfreemap.org/planet",
+      fineRoadDetail.tileZoomBoost,
+      fineRoadDetail.minDetailTileZoom,
+    ));
+
     const map = new Map({
       container: containerRef.current,
+      attributionControl: false,
       style: "https://tiles.openfreemap.org/styles/dark",
       transformStyle: (_, style) => {
-        const nextStyle = {
+        const nextStyle: StyleSpecification = {
           ...style,
+          sources: {
+            ...style.sources,
+            "road-detail": {
+              type: "vector",
+              tiles: ["road-detail://tiles/{z}/{x}/{y}"],
+              minzoom: fineRoadDetail.tileMinZoom,
+              maxzoom: 14 - fineRoadDetail.tileZoomBoost,
+            },
+          },
           layers: style.layers.filter((layer) => {
             if ("source-layer" in layer) {
               return layer["source-layer"] !== "building" && layer["source-layer"] !== "poi";
@@ -134,6 +179,33 @@ function HeatmapPage() {
             const roadWidthLayer = roadWidthLayers[layer.id];
 
             if (layer.type === "line" && roadColor !== undefined && roadWidthLayer !== undefined) {
+              if (roadWidthLayer === "path" || roadWidthLayer === "minor") {
+                const paint = { ...layer.paint };
+                delete paint["line-dasharray"];
+
+                return {
+                  ...layer,
+                  minzoom: fineRoadDetail.minZoom,
+                  filter: [
+                    "all",
+                    ["match", ["geometry-type"], ["LineString", "MultiLineString"], true, false],
+                    ["match", ["get", "class"], roadWidthLayer === "path"
+                      ? ["path", "pedestrian", "raceway"]
+                      : ["minor", "service", "track", "residential", "unclassified", "living_street"], true, false],
+                  ],
+                  paint: {
+                    ...paint,
+                    "line-color": [
+                      "interpolate", ["linear"], ["zoom"],
+                      fineRoadDetail.overviewZoom, fineRoadDetail.overviewColor,
+                      fineRoadDetail.detailZoom, roadColor,
+                    ],
+                    "line-opacity": 1,
+                    "line-width": zoomCurve(roadWidthStops[roadWidthLayer]),
+                  },
+                };
+              }
+
               return {
                 ...layer,
                 paint: {
@@ -177,17 +249,82 @@ function HeatmapPage() {
           }),
         };
 
+        const detailLayers: LayerSpecification[] = [
+          {
+            id: "road-detail-minor",
+            type: "line",
+            source: "road-detail",
+            "source-layer": "transportation",
+            minzoom: fineRoadDetail.tileMinZoom,
+            maxzoom: fineRoadDetail.minorTileMaxZoom,
+            filter: ["match", ["get", "class"], ["minor", "residential", "unclassified", "living_street"], true, false],
+            layout: { "line-cap": "round", "line-join": "round" },
+            paint: {
+              "line-color": fineRoadDetail.overviewColor,
+              "line-width": zoomCurve([[10, 0.25], [12, 0.5]]),
+              "line-opacity": zoomCurve([[10, 0], [10.5, 1], [12, 1]]),
+            },
+          },
+          {
+            id: "road-detail-path",
+            type: "line",
+            source: "road-detail",
+            "source-layer": "transportation",
+            minzoom: fineRoadDetail.pathTileMinZoom,
+            maxzoom: fineRoadDetail.pathTileMaxZoom,
+            filter: ["match", ["get", "class"], ["service", "track", "path", "pedestrian", "raceway"], true, false],
+            layout: { "line-cap": "round", "line-join": "round" },
+            paint: {
+              "line-color": fineRoadDetail.overviewColor,
+              "line-width": zoomCurve([[11, 0.2], [13, 0.4]]),
+              "line-opacity": zoomCurve([[11, 0], [11.5, 1], [13, 1]]),
+            },
+          },
+        ];
+        const firstRoadIndex = nextStyle.layers.findIndex((layer) => layer.id === "highway_path");
+        nextStyle.layers.splice(firstRoadIndex < 0 ? nextStyle.layers.length : firstRoadIndex, 0, ...detailLayers);
+
         delete nextStyle.glyphs;
         return nextStyle;
       },
-      center: [28.0473, -26.2041],
+      center: [28.1528, -26.1411],
       zoom: 11,
     });
 
     map.addControl(new NavigationControl(), "top-right");
+    map.addControl(new MapAttributionControl(), "bottom-right");
+    map.scrollZoom.setWheelZoomRate(zoomSettings.wheelRate);
+    map.scrollZoom.setZoomRate(zoomSettings.trackpadRate);
+
+    const container = map.getContainer();
+
+    function handleZoomClick(event: MouseEvent) {
+      if (event.target instanceof Element !== true) {
+        return;
+      }
+
+      const button = event.target.closest<HTMLButtonElement>(
+        ".maplibregl-ctrl-zoom-in, .maplibregl-ctrl-zoom-out",
+      );
+
+      if (button === null || button.disabled === true) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      const direction = button.classList.contains("maplibregl-ctrl-zoom-in") ? 1 : -1;
+      map.zoomTo(map.getZoom() + direction * zoomSettings.buttonStep, {
+        duration: zoomSettings.buttonDuration,
+      }, { originalEvent: event });
+    }
+
+    container.addEventListener("click", handleZoomClick, true);
 
     return () => {
+      container.removeEventListener("click", handleZoomClick, true);
       map.remove();
+      removeProtocol("road-detail");
     };
   }, []);
 

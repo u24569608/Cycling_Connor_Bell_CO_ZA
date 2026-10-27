@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
+    "@mapbox/vector-tile": "^3.0.0",
+    "@maplibre/vt-pbf": "^4.3.3",
     "@phosphor-icons/react": "^2.1.10",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
@@ -17,6 +19,7 @@
     "cn": "^0.5.0",
     "maplibre-gl": "^6.16.0",
     "next": "16.4.3",
+    "pbf": "^5.1.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "shadcn": "^4.22.1",
