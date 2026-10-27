@@ -1,3 +1,15 @@
+html:has(main[data-page="heatmap"]),
+body:has(main[data-page="heatmap"]) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.heatmap-map,
+.heatmap-map .maplibregl-canvas-container {
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
 .heatmap-map.maplibregl-map {
   background-color: #0c0c0c;
   font-family: var(--font-work-sans), sans-serif;
@@ -22,7 +34,7 @@
 .heatmap-map .maplibregl-ctrl-group {
   border-radius: 0;
   background-color: #1c1c1c;
-  box-shadow: 0 0 0 1px #383838;
+  box-shadow: 0 0 0 2px #383838;
 }
 
 .heatmap-map .maplibregl-ctrl-group button:first-child,
@@ -31,7 +43,7 @@
 }
 
 .heatmap-map .maplibregl-ctrl-group button + button {
-  border-top-color: #383838;
+  border-top: 2px solid #383838;
 }
 
 .heatmap-map .maplibregl-ctrl-group button {
