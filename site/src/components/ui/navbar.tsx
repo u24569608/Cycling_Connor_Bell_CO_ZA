@@ -30,7 +30,7 @@ function Navbar() {
           className="max-w-[calc(100%-3.5rem)] self-center tracking-wide text-lg text-white font-semibold"
         >
           <span className="fade-underline underline-offset-4 transition-[text-decoration-color] duration-500 ease-in-out motion-reduce:transition-none">
-            CONNOR BELL – CYCLING
+            CONNOR BELL <span className="font-light">Cycling</span>
           </span>
         </Link>
 
@@ -80,7 +80,7 @@ function Navbar() {
                 <SocialLinks className="mt-12 flex-col items-center" />
 
                 <address className="mt-auto pt-16 text-[1rem] leading-relaxed tracking-wide not-italic">
-                  <p className="font-semibold text-[1.1rem]">CONNOR BELL – CYCLING</p>
+                  <p className="font-semibold text-[1.1rem]">CONNOR BELL <span className="font-light">Cycling</span></p>
                   <p className="flex items-center justify-center gap-1.5">
                     <span>Johannesburg – South Africa</span>
                   </p>
