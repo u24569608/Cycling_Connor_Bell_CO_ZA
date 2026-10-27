@@ -7,9 +7,9 @@ export default function NotFound() {
     <main className="flex min-h-svh flex-col items-start justify-center bg-black px-6 py-12 text-left text-white md:px-24">
       <Link
         href="/"
-        className="tracking-wide text-lg text-white font-semibold whitespace-nowrap"
+        className="tracking-wide text-lg text-white font-semibold"
       >
-        CONNOR BELL – CYCLING
+        CONNOR BELL – CYCLING
       </Link>
 
       <h1 className="text-[clamp(6rem,30vw,8rem)] leading-none font-semibold tracking-tight sm:text-[12rem] md:text-[16rem]">

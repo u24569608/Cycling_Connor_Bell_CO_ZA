@@ -27,9 +27,11 @@ function Navbar() {
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between px-8 py-5">
         <Link
           href="/"
-          className="fade-underline self-center underline-offset-4 tracking-wide text-lg text-white font-semibold whitespace-nowrap transition-[text-decoration-color] duration-500 ease-in-out motion-reduce:transition-none"
+          className="max-w-[calc(100%-3.5rem)] self-center tracking-wide text-lg text-white font-semibold"
         >
-          CONNOR BELL – CYCLING
+          <span className="fade-underline underline-offset-4 transition-[text-decoration-color] duration-500 ease-in-out motion-reduce:transition-none">
+            CONNOR BELL – CYCLING
+          </span>
         </Link>
 
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
@@ -78,7 +80,7 @@ function Navbar() {
                 <SocialLinks className="mt-12 flex-col items-center" />
 
                 <address className="mt-auto pt-16 text-[1rem] leading-relaxed tracking-wide not-italic">
-                  <p className="font-semibold text-[1.1rem]">CONNOR BELL – CYCLING</p>
+                  <p className="font-semibold text-[1.1rem]">CONNOR BELL – CYCLING</p>
                   <p className="flex items-center justify-center gap-1.5">
                     <span>Johannesburg – South Africa</span>
                   </p>
