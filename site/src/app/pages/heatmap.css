@@ -3,6 +3,22 @@
   font-family: var(--font-work-sans), sans-serif;
 }
 
+.heatmap-map .maplibregl-ctrl-top-right {
+  top: 2rem;
+  right: 2rem;
+}
+
+.heatmap-map .maplibregl-ctrl-top-right > .maplibregl-ctrl {
+  margin: 0;
+}
+
+@media (width < 48rem) {
+  .heatmap-map .maplibregl-ctrl-top-right {
+    top: auto;
+    bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 .heatmap-map .maplibregl-ctrl-group {
   border-radius: 0;
   background-color: #1c1c1c;
@@ -16,6 +32,10 @@
 
 .heatmap-map .maplibregl-ctrl-group button + button {
   border-top-color: #383838;
+}
+
+.heatmap-map .maplibregl-ctrl-group button {
+  transition: background-color 500ms ease-in-out;
 }
 
 .heatmap-map .maplibregl-ctrl-group button:hover {
@@ -49,64 +69,8 @@
   content: "remove";
 }
 
-.heatmap-map .maplibregl-ctrl-attrib,
-.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact {
-  background-color: rgb(12 12 12 / 90%);
-  color: #a3a3a3;
-}
-
-.heatmap-map .maplibregl-ctrl-attrib a {
-  color: inherit;
-}
-
-.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact {
-  box-sizing: border-box;
-  min-width: 29px;
-  min-height: 29px;
-  padding: 0;
-  border-radius: 0;
-  background-color: #1c1c1c;
-  box-shadow: 0 0 0 1px #383838;
-}
-
-.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact.maplibregl-compact-show {
-  padding: 4px 37px 4px 8px;
-}
-
-.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact::after {
-  display: none;
-}
-
-.heatmap-map .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button {
-  width: 29px;
-  height: 29px;
-  border-radius: 0;
-  background-color: #1c1c1c;
-  background-image: none;
-  color: #ccc;
-  filter: none;
-  font: 400 18px / 1 "Material Symbols Sharp";
-  font-feature-settings: "liga";
-}
-
-.heatmap-map .maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button {
-  display: grid;
-  place-items: center;
-}
-
-.heatmap-map .maplibregl-ctrl-attrib-button::before {
-  content: "info_i";
-}
-
-.heatmap-map .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button:hover {
-  background-color: #2a2a2a;
-}
-
-.heatmap-map .maplibregl-ctrl-attrib-button:focus {
-  box-shadow: none;
-}
-
-.heatmap-map .maplibregl-ctrl-attrib-button:focus-visible {
-  outline: 2px solid #b8b8b8;
-  outline-offset: -2px;
+@media (prefers-reduced-motion: reduce) {
+  .heatmap-map .maplibregl-ctrl-group button {
+    transition: none;
+  }
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { Map, NavigationControl, AttributionControl, addProtocol, removeProtocol, setWorkerUrl, type LayerSpecification, type StyleSpecification } from "maplibre-gl";
+import { Map, NavigationControl, addProtocol, removeProtocol, setWorkerUrl, type LayerSpecification, type StyleSpecification } from "maplibre-gl";
 import { createRoadDetailProtocol } from "@/lib/road-detail";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./heatmap.css";
@@ -124,14 +124,6 @@ const labelMinZoom: Record<string, number> = {
 
 function zoomCurve(stops: ZoomStops): ZoomExpression {
   return ["interpolate", ["linear"], ["zoom"], ...stops.flat()];
-}
-
-class MapAttributionControl extends AttributionControl {
-  onAdd(map: Map): HTMLElement {
-    const container = super.onAdd(map);
-    container.classList.remove("maplibregl-compact-show");
-    return container;
-  }
 }
 
 function HeatmapPage() {
@@ -292,7 +284,6 @@ function HeatmapPage() {
     });
 
     map.addControl(new NavigationControl(), "top-right");
-    map.addControl(new MapAttributionControl(), "bottom-right");
     map.scrollZoom.setWheelZoomRate(zoomSettings.wheelRate);
     map.scrollZoom.setZoomRate(zoomSettings.trackpadRate);
 
